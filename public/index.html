@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(120deg, #2c3e50, #4ca1af);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            background: #1e272e;
+            border-radius: 12px 0px 12px 0px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.4);
+            width: 60%;
+            max-width: 800px;
+            padding: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #f4f7ec;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .chatwindow {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+        }
+
+        .outputContainer {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 30px;
+            padding: 10px;
+            border: 2px solid #4ca1af;
+            border-radius: 0px 8px 0px 8px; 
+            background-color: #2c3e50;
+        }
+
+        .output {
+            display: flex;
+            flex-direction: column; /* Ensure messages are stacked vertically */
+            gap: 10px; /* Add space between messages */
+        }
+
+        .output div {
+            margin: 0;
+            padding: 10px;
+            background-color: #4ca1af;
+            border-radius: 6px;
+            color: #ffffff;
+            width: fit-content;
+            align-self: flex-start; /* Align messages to the left */
+        }
+
+        .feedback {
+            color: #d1d1d1;
+            font-style: italic;
+        }
+
+        .inputContainer {
+            display: flex;
+            flex-direction: column; /* Arrange items vertically */
+            justify-content: flex-start;
+            align-items: center;
+            gap: 10px; /* Add space between elements */
+        }
+
+        input[type="text"],
+        input[type="paragraph"],
+        button {
+            width: 90%; /* Full width for inputs and button */
+        }
+
+        input[type="text"],
+        input[type="paragraph"] {
+            padding: 10px;
+            border-radius: 0px 6px 0px 6px;
+            border: none;
+            background-color: #34495e;
+            color: #ffffff;
+        }
+
+        input[type="text"]::placeholder,
+        input[type="paragraph"]::placeholder {
+            color: #bdc3c7;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px 0px 6px 0px;
+            background-color: #4ca1af;
+            color: #ffffff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            align-self: center; /* Center button horizontally */
+            width: auto; /* Adaptive width */
+        }
+
+        button:hover {
+            background-color: #3d8b9e;
+        }
+
+        button:active {
+            background-color: #2c7b8d;
+        }
+
+        /* Make responsive */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                padding: 15px;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="container">
+        <h2>LET'S CHAT here and there</h2>
+        <div class="chatwindow" id="chatwindow">
+            <div class="outputContainer" id="outputContainer">
+                <div class="output" id="output"></div>
+                <div class="feedback" id="feedback"></div>
+            </div>
+            <div class="inputContainer" id="inputContainer">
+                <input type="text" id="username" placeholder="Username">
+                <input type="text" id="message" placeholder="What is on your mind??">
+                <button id="send">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io('http://localhost:1900');
+
+        let output = document.getElementById('output');
+        let username = document.getElementById('username');
+        let message = document.getElementById('message');
+        let send = document.getElementById('send');
+
+        function scrollToBottom() {
+            outputContainer.scrollTop = outputContainer.scrollHeight;
+        }
+
+        send.addEventListener('click', () => {
+            let data = {
+                username: username.value,
+                message: message.value
+            };
+            socket.emit('chat', data);
+            message.value = '';
+        });
+
+        document.addEventListener('keydown', (e)=>{
+            if(e.keyCode == 13){
+                send.click();
+            }
+        })
+
+        message.addEventListener('keypress', ()=>{
+            socket.emit('typing', username.value);
+        })
+
+        // Listen for chat messages from the server
+        socket.on('chat', (data) => {
+            output.innerHTML += `<div><strong>${data.username}:</strong> ${data.message}</div>`;
+            scrollToBottom();
+        });
+
+        socket.on('typing', (name) => {
+            feedback.innerHTML = `<p><em>${name} is typing a message...</em></p>`;
+            scrollToBottom();
+            setTimeout(() => {
+                feedback.innerHTML = '';
+            }, 4000);
+        });
+    </script>
+
+</body>
+</html>
