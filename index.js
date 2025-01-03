@@ -1,3 +1,4 @@
+const { instrument } = require('@socket.io/admin-ui');
 
 let express = require('express');
 let socket = require('socket.io');
@@ -14,8 +15,13 @@ app.get('/',(res,req)=>{
     req.sendFile(__dirname + '/public/index.html');
 })
 
-//create socket
-let io = socket(server);
+// Create Socket.IO instance with Admin UI
+const io = require('socket.io')(server, {
+    cors: {
+        origin: ['http://localhost:1900','https://admin.socket.io'],
+        credentials: true
+    }
+});
 
 io.on('connection',(socket)=>{
     console.log(' a new user is connnected : @' + socket.id);
@@ -30,3 +36,13 @@ io.on('connection',(socket)=>{
         socket.broadcast.emit('typing',name);
     })
 })
+
+
+instrument(io, { 
+    auth: false,
+    namespaceName: '/admin' // Clearer namespace for admin
+});
+
+app.get('/admin', (req, res) => {
+    res.send('<h1>Admin interface is running at https://admin.socket.io/</h1>');
+});
