@@ -11,17 +11,17 @@ let server = app.listen(1900,()=>{
 })
 
 //create route
-app.get('/',(res,req)=>{
-    req.sendFile(__dirname + '/public/index.html');
-})
+app.use(express.static('public'));
+
 
 // Create Socket.IO instance with Admin UI
-const io = require('socket.io')(server, {
+const io = socket(server, {
     cors: {
-        origin: ['http://localhost:1900','https://admin.socket.io'],
+        origin: ['http://localhost:1900', 'https://admin.socket.io'],
         credentials: true
     }
 });
+
 
 io.on('connection',(socket)=>{
     console.log(' a new user is connnected : @' + socket.id);
@@ -40,9 +40,10 @@ io.on('connection',(socket)=>{
 
 instrument(io, { 
     auth: false,
+    mode: 'development',
     namespaceName: '/admin' // Clearer namespace for admin
 });
 
 app.get('/admin', (req, res) => {
-    res.send('<h1>Admin interface is running at https://admin.socket.io/</h1>');
+    res.send('<h1>Admin interface is running at <a href="https://admin.socket.io/">https://admin.socket.io/</a></h1>');
 });
