@@ -203,7 +203,8 @@
       });
 
       socket.on("typing", (name) => {
-        feedback.innerHTML = `<p><em>${name} is typing a message...</em></p>`;
+        let displayName = name.trim() === "" ? "Someone" : name;
+        feedback.innerHTML = `<p><em>${displayName} is typing a message...</em></p>`;
         scrollToBottom();
         setTimeout(() => {
           feedback.innerHTML = "";
