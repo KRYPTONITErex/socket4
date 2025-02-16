@@ -44,7 +44,7 @@ io.on('connection',(socket)=>{
 instrument(io, { 
     auth: false,
     mode: 'development',
-    namespaceName: '/admin' // Clearer namespace for admin
+    namespaceName: '/admin'
 });
 
 app.get('/admin', (req, res) => {
