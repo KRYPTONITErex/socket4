@@ -144,7 +144,7 @@
   <body>
 
     <div class="container" id="container">
-      <h2>LET'S CHAT here and there</h2>
+      <h2>LET'S CHAT here and there 🏄</h2>
 
       <div class="chatwindow" id="chatwindow">
 
@@ -154,8 +154,8 @@
         </div>
 
         <div class="inputContainer" id="inputContainer">
-          <input type="text" id="username" placeholder="Username" />
-          <input type="text" id="message" placeholder="What is on your mind??"/>
+          <input type="text" id="username" placeholder="👤  Username" />
+          <input type="text" id="message" placeholder="💬  What is on your mind??"/>
           <button id="send">Send</button>
         </div>
 
@@ -182,6 +182,7 @@
       });
 
       send.addEventListener("click", () => {
+        if(message.value === "") return alert("Please enter a message");
         let data = {
           username: username.value.trim() === "" ? "Anonymous" : username.value,
           message: message.value,
