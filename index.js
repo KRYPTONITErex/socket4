@@ -1,4 +1,3 @@
-const { instrument } = require('@socket.io/admin-ui');
 
 let express = require('express');
 let socket = require('socket.io');
