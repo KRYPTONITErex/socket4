@@ -1,16 +1,16 @@
-
-let express = require('express');
 let socket = require('socket.io');
 
+let express = require('express');
 let app = express();
+
+//create route
+app.use(express.static('public'));
 
 //create server
 let server = app.listen(1900,()=>{
     console.log('server started on port 1900');
 })
 
-//create route
-app.use(express.static('public'));
 
 //create socket
 let io = socket(server);
